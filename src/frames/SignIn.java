@@ -46,7 +46,7 @@ public class SignIn extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         password = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        signin = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
 
@@ -82,10 +82,10 @@ public class SignIn extends javax.swing.JFrame {
             }
         });
 
-        jButton2.setIcon(new javax.swing.ImageIcon("C:\\Users\\Shivesh Srivastava\\Documents\\NetBeansProjects\\MiniProject\\SignIn Button.PNG")); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        signin.setIcon(new javax.swing.ImageIcon("C:\\Users\\Shivesh Srivastava\\Documents\\NetBeansProjects\\MiniProject\\SignIn Button.PNG")); // NOI18N
+        signin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                signinActionPerformed(evt);
             }
         });
 
@@ -108,7 +108,7 @@ public class SignIn extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(signin, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(32, 32, 32))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
@@ -145,7 +145,7 @@ public class SignIn extends javax.swing.JFrame {
                 .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(signin, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(59, 59, 59))
@@ -187,7 +187,7 @@ public class SignIn extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_passwordActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void signinActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signinActionPerformed
         try{
          
         pst=conn.prepareStatement("select * from user_login where UserName = ?" );
@@ -199,10 +199,10 @@ public class SignIn extends javax.swing.JFrame {
         if(rs.next())
         {
             rs.close();
-                pst.close();
+            pst.close();
             setVisible(false);
-        Home h = new Home();
-        h.setVisible(true);
+            newhome h = new newhome();
+            h.setVisible(true);
         }
         else
         {
@@ -220,7 +220,7 @@ public class SignIn extends javax.swing.JFrame {
             }catch(Exception e){
         }
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_signinActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
@@ -274,7 +274,6 @@ public class SignIn extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -283,6 +282,7 @@ public class SignIn extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPasswordField password;
+    private javax.swing.JButton signin;
     private javax.swing.JTextField username;
     // End of variables declaration//GEN-END:variables
 

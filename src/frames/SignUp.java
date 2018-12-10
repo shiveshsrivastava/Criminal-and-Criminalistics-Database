@@ -81,6 +81,12 @@ public class SignUp extends javax.swing.JFrame {
             }
         });
 
+        lName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                lNameKeyTyped(evt);
+            }
+        });
+
         jLabel3.setFont(new java.awt.Font("Microsoft New Tai Lue", 0, 13)); // NOI18N
         jLabel3.setText("Last Name");
 
@@ -91,6 +97,14 @@ public class SignUp extends javax.swing.JFrame {
         fName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 fNameActionPerformed(evt);
+            }
+        });
+        fName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                fNameKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                fNameKeyTyped(evt);
             }
         });
 
@@ -266,7 +280,7 @@ public class SignUp extends javax.swing.JFrame {
         // TODO add your handling code here:
         try
         {
-            pst=conn.prepareStatement("insert into user_login (fname,lname,username,password,designation,address) values (?,?,?,?,?,?);");
+            pst=conn.prepareStatement("{call new_user(?,?,?,?,?,?)}");
 
                 pst.setString(1,fName.getText());
                 pst.setString(2,lName.getText());
@@ -317,6 +331,28 @@ public class SignUp extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void fNameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fNameKeyPressed
+        // TODO add your handling code here:
+
+        
+    }//GEN-LAST:event_fNameKeyPressed
+
+    private void fNameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_fNameKeyTyped
+        // TODO add your handling code here:
+                
+        char c = evt.getKeyChar();
+        if(!(Character.isAlphabetic(c)))
+            evt.consume();
+    }//GEN-LAST:event_fNameKeyTyped
+
+    private void lNameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lNameKeyTyped
+        // TODO add your handling code here:
+                
+        char c = evt.getKeyChar();
+        if(!(Character.isAlphabetic(c)))
+            evt.consume();
+    }//GEN-LAST:event_lNameKeyTyped
 
     /**
      * @param args the command line arguments

@@ -14,20 +14,28 @@ import java.text.ParseException;
 import java.sql.*;
 import javax.swing.*;
 import cacd.Cacd;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.TableModel;
+import net.proteanit.sql.DbUtils;
+//import javax.swing.*;
 
 public class Case extends javax.swing.JFrame {
 Connection conn=null;
 ResultSet rs = null;
+ResultSet s = null;
 PreparedStatement pst= null;
+int rs1;
+int flag=0;
     /**
      * Creates new form Case
      */
     public Case() {
         initComponents();
          conn = Cacd.connect();
+         
     }
 
     /**
@@ -57,19 +65,20 @@ PreparedStatement pst= null;
         del = new javax.swing.JButton();
         casestatus = new javax.swing.JComboBox<>();
         date = new com.toedter.calendar.JDateChooser();
+        next = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         jButton3 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        tree = new javax.swing.JTree();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
-        setPreferredSize(new java.awt.Dimension(1366, 768));
+        setPreferredSize(new java.awt.Dimension(1366, 766));
+        setResizable(false);
 
-        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Case", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 14))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Case ID");
@@ -109,21 +118,36 @@ PreparedStatement pst= null;
         jLabel7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel7.setText("Case Status");
 
+        search.setBackground(new java.awt.Color(51, 102, 255));
+        search.setForeground(new java.awt.Color(255, 255, 255));
         search.setText("Search");
+        search.setBorderPainted(false);
+        search.setContentAreaFilled(false);
+        search.setOpaque(true);
         search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchActionPerformed(evt);
             }
         });
 
+        update.setBackground(new java.awt.Color(51, 102, 255));
+        update.setForeground(new java.awt.Color(255, 255, 255));
         update.setText("Update");
+        update.setBorderPainted(false);
+        update.setContentAreaFilled(false);
+        update.setOpaque(true);
         update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 updateActionPerformed(evt);
             }
         });
 
+        add.setBackground(new java.awt.Color(51, 102, 255));
+        add.setForeground(new java.awt.Color(255, 255, 255));
         add.setText("Add");
+        add.setBorderPainted(false);
+        add.setContentAreaFilled(false);
+        add.setOpaque(true);
         add.setPreferredSize(new java.awt.Dimension(100, 32));
         add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -131,7 +155,12 @@ PreparedStatement pst= null;
             }
         });
 
+        del.setBackground(new java.awt.Color(51, 102, 255));
+        del.setForeground(new java.awt.Color(255, 255, 255));
         del.setText("Delete");
+        del.setBorderPainted(false);
+        del.setContentAreaFilled(false);
+        del.setOpaque(true);
         del.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 delActionPerformed(evt);
@@ -140,6 +169,20 @@ PreparedStatement pst= null;
 
         casestatus.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         casestatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "unsolved", "solved" }));
+
+        date.setDateFormatString("dd/MM/yyyy");
+
+        next.setBackground(new java.awt.Color(51, 102, 255));
+        next.setForeground(new java.awt.Color(255, 255, 255));
+        next.setText("Next");
+        next.setBorderPainted(false);
+        next.setContentAreaFilled(false);
+        next.setOpaque(true);
+        next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -152,42 +195,48 @@ PreparedStatement pst= null;
                         .addComponent(jLabel6)
                         .addGap(18, 18, 18)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 373, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(96, 96, 96)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(del, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(add, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 184, Short.MAX_VALUE)
+                        .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(del, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(next, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(185, 185, 185))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel3)
                                     .addComponent(jLabel1))
-                                .addGap(67, 67, 67)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(caseid, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                                .addGap(67, 67, 67))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel7)
-                                .addGap(63, 63, 63)
-                                .addComponent(casestatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(102, 102, 102)))
+                                .addGap(42, 42, 42)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(update, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(305, 305, 305))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(caseid, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(10, 10, 10)
+                                        .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(60, 60, 60))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addGap(32, 32, 32)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(location, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                    .addComponent(officer))
+                                .addGap(264, 264, 264))
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(41, 41, 41)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel5))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(officer, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                                    .addComponent(location))))))
-                .addGap(164, 164, 164))
+                                .addComponent(casestatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(update, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -198,40 +247,47 @@ PreparedStatement pst= null;
                     .addComponent(caseid, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
                     .addComponent(location, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(search, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(search))
                 .addGap(30, 30, 30)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel5)
-                    .addComponent(officer, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(jLabel5)
+                        .addComponent(officer, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 14, Short.MAX_VALUE)
+                        .addComponent(jLabel7)
+                        .addGap(37, 37, 37))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(del, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(update, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(casestatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7))
-                        .addGap(28, 28, 28)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel6)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(14, 14, 14))))
+                            .addComponent(update, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(add, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(del, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(next, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(14, 14, 14))
         );
 
-        jPanel3.setBackground(new java.awt.Color(53, 53, 53));
+        jPanel3.setBackground(new java.awt.Color(51, 102, 255));
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Case Details");
 
-        jButton3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jButton3.setText("X");
+        jButton3.setBackground(new java.awt.Color(51, 102, 255));
+        jButton3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
+        jButton3.setText("Home");
+        jButton3.setBorderPainted(false);
+        jButton3.setContentAreaFilled(false);
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
@@ -261,56 +317,37 @@ PreparedStatement pst= null;
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "CID", "Date", "Location", "Status"
+                "CID", "Date", "Location", "Status", "Reporting Officer"
             }
         ));
-        jScrollPane3.setViewportView(jTable2);
-
-        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("root");
-        javax.swing.tree.DefaultMutableTreeNode treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Home");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Case Details");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Evidence");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Criminal Details");
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Victim Details");
-        treeNode1.add(treeNode2);
-        tree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
-        tree.addMouseListener(new java.awt.event.MouseAdapter() {
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                treeMouseClicked(evt);
+                jTable2MouseClicked(evt);
             }
         });
-        tree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                treeValueChanged(evt);
-            }
-        });
-        jScrollPane4.setViewportView(tree);
+        jScrollPane3.setViewportView(jTable2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -318,12 +355,11 @@ PreparedStatement pst= null;
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane3)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -331,15 +367,10 @@ PreparedStatement pst= null;
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                        .addGap(80, 80, 80))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane4)
-                        .addContainerGap())))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 177, Short.MAX_VALUE)
+                .addGap(80, 80, 80))
         );
 
         pack();
@@ -347,8 +378,8 @@ PreparedStatement pst= null;
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
-         setVisible(false);
-        Home nf = new Home();
+        setVisible(false);
+        newhome nf = new newhome();
         nf.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -356,58 +387,70 @@ PreparedStatement pst= null;
         // TODO add your handling code here:
         try{
          
-            pst=conn.prepareStatement("select * from cases where case_id = ?");
-            pst.setString(1,caseid.getText());
-       
-            rs=pst.executeQuery();
-         
-            if(rs.next()){
-                String sQurreyresult = null;
-                sQurreyresult = rs.getString("location");
-                location.setText(sQurreyresult);  
-             
-                 //java.util.Date newDate = rs.getTimestamp("date");
-
-                 //date.setDate(newDate );
+        pst=conn.prepareStatement("select * from cases where case_id = ?");
+        pst.setString(1,caseid.getText());
+        
+        s=pst.executeQuery();
+        
+        jTable2.setModel(DbUtils.resultSetToTableModel(s));
+        rs=pst.executeQuery();
+        if(rs.next())
+        {
+            String sQurreyresult = null;
+            sQurreyresult = rs.getString("location");
+            location.setText(sQurreyresult);  
+            casestatus.setSelectedItem(rs.getString("status"));
             
-                sQurreyresult = rs.getString("officer_incharge");
-                officer.setText(sQurreyresult);
-                sQurreyresult = rs.getString("description");
-                description.setText(sQurreyresult);
-                sQurreyresult = rs.getString("status");
-                casestatus.addItem(sQurreyresult);
-                rs.close();
-                pst.close();
-            }
-            else
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            try 
             {
-                JOptionPane.showMessageDialog(null, "The record dosent exists"); 
+                java.util.Date d = df.parse(rs.getString("date"));
+                date.setDate(d);
+            } 
+            catch (ParseException e) 
+            {
+                e.printStackTrace();
             }
+           
+           sQurreyresult = rs.getString("officer_incharge");
+           officer.setText(sQurreyresult);
+           sQurreyresult = rs.getString("description");
+           description.setText(sQurreyresult);
+           sQurreyresult = rs.getString("status");
+            casestatus.setSelectedItem(sQurreyresult);
+        
+           
+            rs.close();
+            pst.close();
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "The record dosent exists"); 
+        }
         
         
         }
+        
         catch(HeadlessException | SQLException e)
         {
             JOptionPane.showMessageDialog(null, e);
         }
         finally{
             try{
+                
                 rs.close();
                 pst.close();
                 
-            }
-            catch(Exception e){
-            }
+            }catch(Exception e){
+        }
+            
         }
         
                 
     }//GEN-LAST:event_searchActionPerformed
 
-
-        
-    
     private void caseidActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_caseidActionPerformed
-        // TODO add your handling code here:
+       
         
     }//GEN-LAST:event_caseidActionPerformed
 
@@ -420,10 +463,6 @@ PreparedStatement pst= null;
     }                                       
 
     
-    private void treeMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_treeMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_treeMouseClicked
-
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
         // TODO add your handling code here:
         
@@ -432,109 +471,197 @@ PreparedStatement pst= null;
             pst=conn.prepareStatement("insert into cases values(?,?,?,?,?,?) ");
             pst.setString(1,caseid.getText());
             pst.setString(2,location.getText());
-        
-            Date now = date.getDate();
+        try{
             
-            java.sql.Date sd = new java.sql.Date(now.getDate());
-            pst.setDate(3,sd);
+            java.util.Date dt = date.getDate();
+            java.text.SimpleDateFormat sdf =  new java.text.SimpleDateFormat("yyyy-MM-dd");
+            String currentTime = sdf.format(dt);
+            pst.setString(3,currentTime);
+        }catch(NullPointerException e)
+        {
+            JOptionPane.showMessageDialog(null, "Date should not be left empty!");
+        }
             pst.setString(4,officer.getText());
             pst.setString(5,description.getText());
-        
             String status=(String)casestatus.getSelectedItem();
-        
             pst.setString(6,status);
-        
-            int rs=pst.executeUpdate();
-        
-            if(rs!=0){ 
+            new Case().showtableData();
+            if((caseid.getText().equals("")) || (officer.getText() .equals("")))
+                {
+                    JOptionPane.showMessageDialog(null, "CasID or Officer Incharge should not be left empty!");
+                    flag = 0;
+                }
+             else
+                {
+                    flag = 1;
+                    rs1=pst.executeUpdate();
+                }
+            
+              
+              if(rs1!=0){ 
                  
-                    JOptionPane.showMessageDialog(null, "New Record Inserted!"); 
+                 JOptionPane.showMessageDialog(null, "New Record Inserted!"); 
+                
                  
-            }
-            else{
-                 JOptionPane.showMessageDialog(null, "Please enter valid records and try again");     
-            }
-        }
+                 caseid.setText("");
+                 location.setText("");
+                 date.setDate(null);
+                 officer.setText("");
+                 description.setText("");
+                 casestatus.setSelectedItem("");
+                 
+              }
+              
+         }
+        
         catch(HeadlessException | SQLException e)
         {
             JOptionPane.showMessageDialog(null, e);
-        }
-        finally{
+        }finally{
             try{
                 rs.close();
                 pst.close();
                 
             }catch(Exception e){
-            }
         }
+        }
+         showtableData();
     }//GEN-LAST:event_addActionPerformed
 
     private void delActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delActionPerformed
         // TODO add your handling code here:
-        try{
-          
-            pst=conn.prepareStatement("DELETE FROM cases WHERE case_id=?");
-            pst.setString(1,caseid.getText());
-        
-            int rs=pst.executeUpdate();
-        
-            if(rs!=0){
-                JOptionPane.showMessageDialog(null, "Record Deleted Succesfully! "); 
-            }
-            else{
-            JOptionPane.showMessageDialog(null, "Cannot delete the record. Try again.");     
-            }
+         try{
+          int p=JOptionPane.showConfirmDialog(null,"Are u sure u want to delete?","delete",JOptionPane.YES_NO_OPTION);
+            if(p==0)
+            {
+        pst=conn.prepareStatement("DELETE FROM cases WHERE case_id=?");
+        pst.setString(1,caseid.getText());
+         int rs=pst.executeUpdate();
+              if(rs!=0){
+                 JOptionPane.showMessageDialog(null, "Record Deleted Succesfully! ");
+                 
+                 caseid.setText("");
+                 location.setText("");
+                 date.setDate(null);
+                 officer.setText("");
+                 description.setText("");
+                 casestatus.setSelectedItem("");
+              }
+              else{
+              JOptionPane.showMessageDialog(null, "Cannot delete the record. Try again.");     
         }
-        catch(HeadlessException | SQLException e){
+         }}
+          catch(HeadlessException | SQLException e)
+        {
             JOptionPane.showMessageDialog(null, e);
-        }
-        finally{
+        }finally{
             try{
                 rs.close();
                 pst.close();
                 
-            }
-            catch(Exception e){
-            }
+            }catch(Exception e){
         }
+        }showtableData();
     }//GEN-LAST:event_delActionPerformed
 
     private void updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateActionPerformed
         // TODO add your handling code here:
         try{
           
-            pst=conn.prepareStatement("UPDATE cases set status=? WHERE case_id=?");
-            String status=(String)casestatus.getSelectedItem();
-            pst.setString(1,status);
-            pst.setString(2,caseid.getText());
-            int rs=pst.executeUpdate();
+        pst=conn.prepareStatement("UPDATE cases set location = ?,date = ?,officer_incharge = ?,description = ?,status=? WHERE case_id=?");
+        String status=(String)casestatus.getSelectedItem();
+        pst.setString(1,location.getText());
+        java.util.Date dt = date.getDate();
+        java.text.SimpleDateFormat sdf =  new java.text.SimpleDateFormat("yyyy-MM-dd");
+        String currentTime = sdf.format(dt);
+        pst.setString(2,currentTime);
         
-            if(rs!=0){
-                JOptionPane.showMessageDialog(null, "Record Updated Succesfully! "); 
-            }
-            else{
-                 JOptionPane.showMessageDialog(null, "Cannot update the record. Try again.");     
-            }
+        pst.setString(3,officer.getText());
+        
+        pst.setString(4,description.getText());
+        
+        pst.setString(5,status);
+        
+        pst.setString(6,caseid.getText());
+        
+         int rs=pst.executeUpdate();
+       
+              if(rs!=0){
+                 JOptionPane.showMessageDialog(null, "Record Updated Succesfully! "); 
+                 caseid.setText("");
+                 location.setText("");
+                 date.setDate(null);
+                 officer.setText("");
+                 description.setText("");
+                 casestatus.setSelectedItem("");
+                 
+              }
+              else{
+              JOptionPane.showMessageDialog(null, "Cannot update the record. Try again.");     
         }
-        catch(HeadlessException | SQLException e){
+         }
+          catch(HeadlessException | SQLException e)
+        {
             JOptionPane.showMessageDialog(null, e);
-        }
-        finally{
+        }finally{
             try{
                 rs.close();
                 pst.close();
                 
-            }
-            catch(Exception e){
-            }
-        } 
+            }catch(Exception e){
+        }
+        }
+        showtableData();
     }//GEN-LAST:event_updateActionPerformed
 
-    private void treeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeValueChanged
+    private void nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextActionPerformed
         // TODO add your handling code here:
-      
-    }//GEN-LAST:event_treeValueChanged
+        setVisible(false);
+        Evidence e=new Evidence();
+        e.setVisible(true);
+    }//GEN-LAST:event_nextActionPerformed
 
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+        // TODO add your handling code here:
+         int i=jTable2.getSelectedRow();
+        TableModel model=jTable2.getModel();
+        caseid.setText(model.getValueAt(i,0).toString());
+         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+try {
+    java.util.Date d = df.parse(model.getValueAt(i,2).toString());
+    date.setDate(d);
+} catch (ParseException e) {
+   e.printStackTrace();
+}
+        location.setText(model.getValueAt(i,1).toString());
+        casestatus.setSelectedItem(model.getValueAt(i,5).toString());
+        officer.setText(model.getValueAt(i,3).toString());
+        description.setText(model.getValueAt(i,4).toString());
+    }//GEN-LAST:event_jTable2MouseClicked
+
+     public  void showtableData()
+    {
+        try{
+          String sql="select * from cases ";
+          pst=conn.prepareStatement(sql);
+         rs=pst.executeQuery();
+          jTable2.clearSelection();
+          jTable2.setModel(DbUtils.resultSetToTableModel(rs));
+        }catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null,e);
+        }finally{
+            try{
+                rs.close();
+                pst.close();
+                
+            }catch(Exception e){
+        }
+        } 
+    }
+     
+     
+     
     /**
      * @param args the command line arguments
      */
@@ -561,10 +688,12 @@ PreparedStatement pst= null;
             java.util.logging.Logger.getLogger(Case.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
-          
             public void run() {
                 new Case().setVisible(true);
             }
@@ -590,12 +719,11 @@ PreparedStatement pst= null;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField location;
+    private javax.swing.JButton next;
     private javax.swing.JTextField officer;
     private javax.swing.JButton search;
-    private javax.swing.JTree tree;
     private javax.swing.JButton update;
     // End of variables declaration//GEN-END:variables
 }

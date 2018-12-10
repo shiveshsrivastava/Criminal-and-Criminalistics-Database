@@ -21,9 +21,10 @@ public class Cacd {
         try {
             // db parameters
             
-            String url = "jdbc:sqlite:C:/Users/Shivesh Srivastava/Documents/NetBeansProjects/cacd/c.db";
+            //String url = "jdbc:sqlite:C:/Users/Shivesh Srivastava/Documents/NetBeansProjects/cacd/c.db";
+            String url = "jdbc:mysql://localhost:3306/c";
             // create a connection to the database
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(url,"root","");
             
             System.out.println("Connection to SQLite has been established.");
             return conn;
